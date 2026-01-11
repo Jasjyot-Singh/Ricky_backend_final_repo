@@ -1,9 +1,11 @@
 package com.example.ricky_backend_final.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -16,6 +18,10 @@ public class Driver {
 
     @Column(nullable = false)
     private String driverName;
+
+    @OneToMany(mappedBy = "driver", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonBackReference
+    private List<Daily_driver_score_data> dailyDriverScoreData;
 
     @Column(nullable = false, unique = true)
     private String driverPhone;
@@ -57,4 +63,12 @@ public class Driver {
 
     public Vehicle getVehicle() { return vehicle; }
     public void setVehicle(Vehicle vehicle) { this.vehicle = vehicle; }
+
+    public List<Daily_driver_score_data> getDailyDriverScoreData() {
+        return dailyDriverScoreData;
+    }
+
+    public void setDailyDriverScoreData(List<Daily_driver_score_data> dailyDriverScoreData) {
+        this.dailyDriverScoreData = dailyDriverScoreData;
+    }
 }
