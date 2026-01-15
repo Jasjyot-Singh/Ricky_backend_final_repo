@@ -9,9 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/api/sos")
-@CrossOrigin(origins = {"*"})
+@RestController("sosDbController")  // explicit bean name
+@RequestMapping("/api/sos")         // DB + admin-facing REST
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://10.131.6.124:5173",
+        "https://anveshan-x-ricky-ap.vercel.app"
+})
 public class SosController {
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -29,7 +34,6 @@ public class SosController {
             Double longitude = Double.parseDouble(sosData.get("longitude").toString());
             String driverId = sosData.getOrDefault("driverId", "AUTO-001").toString();
 
-            // 🔴 NORMALIZE TYPE
             String rawType = sosData.getOrDefault("type", "SOS_BUTTON").toString();
             String normalizedType = rawType.equalsIgnoreCase("SOS_BUTTON")
                     ? "EMERGENCY"
@@ -45,7 +49,6 @@ public class SosController {
 
             SosAlert saved = sosRepository.save(alert);
 
-            // ✅ Broadcast AFTER save
             messagingTemplate.convertAndSend("/topic/sos-alerts", saved);
 
             return ResponseEntity.ok(saved);
@@ -53,7 +56,6 @@ public class SosController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     @GetMapping("/alerts")
     public ResponseEntity<List<SosAlert>> getAllAlerts() {
@@ -83,7 +85,6 @@ public class SosController {
                 alert.setStatus("RESOLVED");
                 SosAlert saved = sosRepository.save(alert);
 
-                // Notify admin panel of acknowledgment
                 messagingTemplate.convertAndSend("/topic/sos-updates", saved);
 
                 return ResponseEntity.ok(saved);

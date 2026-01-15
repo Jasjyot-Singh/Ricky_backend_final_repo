@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/ride-report")
-@CrossOrigin(origins = {"http://localhost:5173", "http://10.131.6.124:5173"})
+@CrossOrigin(origins = {"http://localhost:3000",
+            "http://localhost:5173",
+            "http://10.131.6.124:5173",
+            "https://anveshan-x-ricky-ap.vercel.app"})
 public class Ridereportcontroller {
 
     private final Ridereportsmsservice rideReportSmsService;

@@ -1,6 +1,4 @@
-
 package com.example.ricky_backend_final.websockets;
-
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -10,8 +8,14 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
-@RestController
-@RequestMapping("/api/sos")
+@RestController("sosWebsocketController")      // different bean name
+@RequestMapping("/api/sos-websocket")          // different base path
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://10.131.6.124:5173",
+        "https://anveshan-x-ricky-ap.vercel.app"
+})
 public class SosController {
 
     private static final String SOS_TOPIC = "/topic/sos-alerts";
@@ -22,14 +26,9 @@ public class SosController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    /**
-     * This endpoint is called by your PyQt app:
-     * requests.post(base_url, json=payload)
-     */
     @PostMapping
     public ResponseEntity<?> receiveSos(@RequestBody Map<String, Object> payload) {
 
-        // 🔒 Defensive parsing (matches your Python client)
         String type = payload.getOrDefault("type", "SOS_BUTTON").toString();
 
         double latitude = payload.get("latitude") != null
@@ -40,7 +39,6 @@ public class SosController {
                 ? Double.parseDouble(payload.get("longitude").toString())
                 : 0.0;
 
-        // ✅ Create SOS message (NO DB)
         SosWebSocketMessage sosMessage = new SosWebSocketMessage(
                 "SOS-" + UUID.randomUUID(),
                 type,
@@ -50,20 +48,14 @@ public class SosController {
                 LocalDateTime.now()
         );
 
-        // 🚀 PUSH TO WEBSOCKET (ADMIN PANEL)
         messagingTemplate.convertAndSend(SOS_TOPIC, sosMessage);
 
-        // ✅ Respond back to PyQt
         return ResponseEntity.ok(Map.of(
                 "status", "RECEIVED",
                 "id", sosMessage.id()
         ));
     }
 
-    /**
-     * Immutable WebSocket payload
-     * (Java 17+ record, fast & clean)
-     */
     public record SosWebSocketMessage(
             String id,
             String type,

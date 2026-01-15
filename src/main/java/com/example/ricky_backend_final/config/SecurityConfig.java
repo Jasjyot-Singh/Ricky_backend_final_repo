@@ -30,8 +30,10 @@ public class SecurityConfig {
         config.setAllowedOrigins(Arrays.asList(
             "http://localhost:3000",
             "http://localhost:5173",
-            "http://10.131.6.124:5173"
+            "http://10.131.6.124:5173",
+            "https://anveshan-x-ricky-ap.vercel.app"
         ));
+
         config.setAllowedMethods(Arrays.asList("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);

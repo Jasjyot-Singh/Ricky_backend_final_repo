@@ -34,19 +34,15 @@ public class FarePerRideData {
     private LocalDateTime endTime;
 
     @JsonProperty("start_latitude")
-    @Column(precision = 10, scale = 7)
     private Double startLatitude;
 
     @JsonProperty("start_longitude")
-    @Column(precision = 10, scale = 7)
     private Double startLongitude;
 
     @JsonProperty("end_latitude")
-    @Column(precision = 10, scale = 7)
     private Double endLatitude;
 
     @JsonProperty("end_longitude")
-    @Column(precision = 10, scale = 7)
     private Double endLongitude;
 
     @JsonProperty("total_distance_km")
@@ -70,8 +66,6 @@ public class FarePerRideData {
             this.receivedAt = LocalDateTime.now();
         }
     }
-
-    // ---------------- Getters and Setters ----------------
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }

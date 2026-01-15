@@ -12,23 +12,21 @@ public class Livelocationconfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-
-        // Where server sends messages to subscribers
-        config.enableSimpleBroker(
-                "/topic",
-                "/queue"
-        );
-
-        // Where clients SEND messages (@MessageMapping)
+        // Server → clients
+        config.enableSimpleBroker("/topic", "/queue");
+        // Clients → server (for @MessageMapping, if you add them later)
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-
-        // RAW WebSocket endpoint (NO SockJS)
         registry
-                .addEndpoint("/ws-ricky")
-                .setAllowedOriginPatterns("*");
+            .addEndpoint("/ws-ricky")
+            .setAllowedOrigins(
+                "http://localhost:5173",
+                "http://localhost:3000",
+                "https://anveshan-x-ricky-ap.vercel.app"
+            );
+        // No SockJS; your frontend uses native WebSocket
     }
 }
