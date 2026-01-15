@@ -9,6 +9,14 @@ import java.util.List;
 
 @Repository
 public interface FarePerRideRepository extends JpaRepository<FarePerRideData, String> {
+
+    /**
+     * Fetch recent fares after the given timestamp, ordered descending by receivedAt
+     */
     List<FarePerRideData> findByReceivedAtAfterOrderByReceivedAtDesc(LocalDateTime dateTime);
+
+    /**
+     * Fetch all fares for a given driver ID, ordered descending by receivedAt
+     */
     List<FarePerRideData> findByDriverIdOrderByReceivedAtDesc(String driverId);
 }

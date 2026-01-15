@@ -17,6 +17,10 @@ public class SosAlert {
     private Boolean acknowledged = false;
     private String status = "ACTIVE"; // ACTIVE, RESOLVED, CANCELLED
 
+    @Column(nullable = false)
+    private String type;
+
+
     @PrePersist
     public void prePersist() {
         if (id == null) {
@@ -57,4 +61,8 @@ public class SosAlert {
 
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+
 }

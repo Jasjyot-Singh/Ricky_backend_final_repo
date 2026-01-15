@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sos")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173", "http://10.131.6.124:5173"})
+@CrossOrigin(origins = {"*"})
 public class SosController {
 
     private final SimpMessagingTemplate messagingTemplate;
@@ -29,19 +29,31 @@ public class SosController {
             Double longitude = Double.parseDouble(sosData.get("longitude").toString());
             String driverId = sosData.getOrDefault("driverId", "AUTO-001").toString();
 
-            SosAlert alert = new SosAlert(driverId, latitude, longitude);
+            // 🔴 NORMALIZE TYPE
+            String rawType = sosData.getOrDefault("type", "SOS_BUTTON").toString();
+            String normalizedType = rawType.equalsIgnoreCase("SOS_BUTTON")
+                    ? "EMERGENCY"
+                    : rawType.toUpperCase();
+
+            SosAlert alert = new SosAlert();
+            alert.setDriverId(driverId);
+            alert.setLatitude(latitude);
+            alert.setLongitude(longitude);
+            alert.setType(normalizedType);
+            alert.setStatus("ACTIVE");
+            alert.setAcknowledged(false);
+
             SosAlert saved = sosRepository.save(alert);
 
-            // Send real-time alert to admin panel
+            // ✅ Broadcast AFTER save
             messagingTemplate.convertAndSend("/topic/sos-alerts", saved);
 
-            System.out.println("🚨 SOS Alert received: " + saved.getId() + " at " + latitude + ", " + longitude);
             return ResponseEntity.ok(saved);
         } catch (Exception e) {
-            System.err.println("Error processing SOS alert: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
+
 
     @GetMapping("/alerts")
     public ResponseEntity<List<SosAlert>> getAllAlerts() {
