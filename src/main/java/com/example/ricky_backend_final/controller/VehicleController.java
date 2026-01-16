@@ -9,10 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/vehicles")
-@CrossOrigin(origins = {"http://localhost:3000",
-            "http://localhost:5173",
-            "http://10.131.6.124:5173",
-            "https://anveshan-x-ricky-ap.vercel.app"})
+@CrossOrigin(origins = {"*"})
 public class VehicleController {
 
     private final VehicleService vehicleService;
