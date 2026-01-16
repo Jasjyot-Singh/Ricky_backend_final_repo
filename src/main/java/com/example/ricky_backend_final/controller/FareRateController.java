@@ -11,9 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fare")
-@CrossOrigin(origins = {"http://localhost:3000",
-            "http://localhost:5173",
-            "https://anveshan-x-ricky-ap.vercel.app"})
+@CrossOrigin(origins = {"*"})
 public class FareRateController {
 
     private final FareRateService fareRateService;
