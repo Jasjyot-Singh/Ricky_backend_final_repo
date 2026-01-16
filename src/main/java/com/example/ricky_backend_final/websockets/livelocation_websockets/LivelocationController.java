@@ -56,3 +56,4 @@ public class LivelocationController {
         return distance > radiusMeters;
     }
 }
+
