@@ -9,11 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/fares")
-@CrossOrigin(origins = {
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "https://anveshan-x-ricky-ap.vercel.app"
-})
+@CrossOrigin(origins = {"*"})
  // for production, restrict origins
 public class FarePerRideController {
 
