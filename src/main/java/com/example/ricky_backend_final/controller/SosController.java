@@ -12,10 +12,7 @@ import java.util.Map;
 @RestController("sosDbController")  // explicit bean name
 @RequestMapping("/api/sos")         // DB + admin-facing REST
 @CrossOrigin(origins = {
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://10.131.6.124:5173",
-        "https://anveshan-x-ricky-ap.vercel.app"
+        "*"
 })
 public class SosController {
 
