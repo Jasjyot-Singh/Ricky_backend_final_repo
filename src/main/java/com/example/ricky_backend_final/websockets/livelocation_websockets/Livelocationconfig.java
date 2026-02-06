@@ -23,10 +23,9 @@ public class Livelocationconfig implements WebSocketMessageBrokerConfigurer {
         registry
             .addEndpoint("/ws-ricky")
             .setAllowedOrigins(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://anveshan-x-ricky-ap.vercel.app"
+                "*"
             );
         // No SockJS; your frontend uses native WebSocket
     }
 }
+
