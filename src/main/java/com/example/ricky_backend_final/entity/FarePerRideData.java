@@ -2,27 +2,29 @@ package com.example.ricky_backend_final.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "autometer_fare_data")
 public class FarePerRideData {
 
+    // 🔑 Internal DB identity (ONLY unique thing)
     @Id
-    @Column(length = 50)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    // 🧾 Ride ID from Pi — NOT UNIQUE, NOT REQUIRED
     @JsonProperty("ride_id")
-    @Column(nullable = false)
+    @Column(name = "ride_id", length = 64)
     private String rideId;
 
     @JsonProperty("driver_id")
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String driverId;
 
     @JsonProperty("passenger_id")
-    @Column(nullable = false)
+    @Column(length = 50)
     private String passengerId;
 
     @JsonProperty("start_time")
@@ -58,54 +60,113 @@ public class FarePerRideData {
     private LocalDateTime receivedAt;
 
     @PrePersist
-    public void prePersist() {
-        if (id == null) {
-            this.id = "AUTO-FARE-" + UUID.randomUUID().toString();
-        }
-        if (receivedAt == null) {
-            this.receivedAt = LocalDateTime.now();
-        }
+    public void onCreate() {
+        this.receivedAt = LocalDateTime.now();
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    // ================= GETTERS / SETTERS =================
 
-    public String getRideId() { return rideId; }
-    public void setRideId(String rideId) { this.rideId = rideId; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getDriverId() { return driverId; }
-    public void setDriverId(String driverId) { this.driverId = driverId; }
+    public String getRideId() {
+        return rideId;
+    }
 
-    public String getPassengerId() { return passengerId; }
-    public void setPassengerId(String passengerId) { this.passengerId = passengerId; }
+    public void setRideId(String rideId) {
+        this.rideId = rideId;
+    }
 
-    public LocalDateTime getStartTime() { return startTime; }
-    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+    public String getDriverId() {
+        return driverId;
+    }
 
-    public LocalDateTime getEndTime() { return endTime; }
-    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
+    public void setDriverId(String driverId) {
+        this.driverId = driverId;
+    }
 
-    public Double getStartLatitude() { return startLatitude; }
-    public void setStartLatitude(Double startLatitude) { this.startLatitude = startLatitude; }
+    public String getPassengerId() {
+        return passengerId;
+    }
 
-    public Double getStartLongitude() { return startLongitude; }
-    public void setStartLongitude(Double startLongitude) { this.startLongitude = startLongitude; }
+    public void setPassengerId(String passengerId) {
+        this.passengerId = passengerId;
+    }
 
-    public Double getEndLatitude() { return endLatitude; }
-    public void setEndLatitude(Double endLatitude) { this.endLatitude = endLatitude; }
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
 
-    public Double getEndLongitude() { return endLongitude; }
-    public void setEndLongitude(Double endLongitude) { this.endLongitude = endLongitude; }
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
 
-    public Double getDistanceKm() { return distanceKm; }
-    public void setDistanceKm(Double distanceKm) { this.distanceKm = distanceKm; }
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
 
-    public Double getFareAmount() { return fareAmount; }
-    public void setFareAmount(Double fareAmount) { this.fareAmount = fareAmount; }
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
 
-    public Double getFareRate() { return fareRate; }
-    public void setFareRate(Double fareRate) { this.fareRate = fareRate; }
+    public Double getStartLatitude() {
+        return startLatitude;
+    }
 
-    public LocalDateTime getReceivedAt() { return receivedAt; }
-    public void setReceivedAt(LocalDateTime receivedAt) { this.receivedAt = receivedAt; }
+    public void setStartLatitude(Double startLatitude) {
+        this.startLatitude = startLatitude;
+    }
+
+    public Double getStartLongitude() {
+        return startLongitude;
+    }
+
+    public void setStartLongitude(Double startLongitude) {
+        this.startLongitude = startLongitude;
+    }
+
+    public Double getEndLatitude() {
+        return endLatitude;
+    }
+
+    public void setEndLatitude(Double endLatitude) {
+        this.endLatitude = endLatitude;
+    }
+
+    public Double getEndLongitude() {
+        return endLongitude;
+    }
+
+    public void setEndLongitude(Double endLongitude) {
+        this.endLongitude = endLongitude;
+    }
+
+    public Double getDistanceKm() {
+        return distanceKm;
+    }
+
+    public void setDistanceKm(Double distanceKm) {
+        this.distanceKm = distanceKm;
+    }
+
+    public Double getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(Double fareAmount) {
+        this.fareAmount = fareAmount;
+    }
+
+    public Double getFareRate() {
+        return fareRate;
+    }
+
+    public void setFareRate(Double fareRate) {
+        this.fareRate = fareRate;
+    }
+
+    public LocalDateTime getReceivedAt() {
+        return receivedAt;
+    }
 }
