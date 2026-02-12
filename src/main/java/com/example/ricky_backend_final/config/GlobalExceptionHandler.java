@@ -17,27 +17,38 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrityViolation(
             DataIntegrityViolationException ex, WebRequest request) {
-        
+    
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("error", "Data Integrity Violation");
-        
-        // Check for specific constraint violations
-        String message = ex.getMessage().toLowerCase();
-        if (message.contains("driver_phone")) {
-            response.put("message", "Phone number already exists");
-        } else if (message.contains("license_number")) {
-            response.put("message", "License number already exists");
-        } else {
-            response.put("message", "Duplicate data detected");
-        }
-        
         response.put("path", request.getDescription(false).replace("uri=", ""));
-        
-        System.err.println("Data Integrity Error: " + ex.getMessage());
+    
+        // 🔥 REAL ROOT CAUSE (Postgres message)
+        String rootMessage = ex.getMostSpecificCause() != null
+                ? ex.getMostSpecificCause().getMessage()
+                : ex.getMessage();
+    
+        response.put("message", rootMessage);
+    
+        // 🔍 Optional: classify by SQLState if present
+        if (rootMessage != null) {
+            if (rootMessage.contains("23505")) {
+                response.put("type", "UNIQUE_VIOLATION");
+            } else if (rootMessage.contains("23502")) {
+                response.put("type", "NOT_NULL_VIOLATION");
+            } else if (rootMessage.contains("23503")) {
+                response.put("type", "FOREIGN_KEY_VIOLATION");
+            }
+        }
+    
+        // 🔥 LOG FULL DETAILS (DO NOT GUESS)
+        System.err.println("=== DATA INTEGRITY VIOLATION ===");
+        ex.printStackTrace();
+    
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+    
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(
@@ -57,3 +68,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }
+
