@@ -50,13 +50,13 @@ CREATE TABLE ride_fare_data (
     id BIGSERIAL PRIMARY KEY,
 
     -- 🧾 Business reference (from Pi)
-    ride_id VARCHAR(64) NOT NULL,
+    ride_id VARCHAR(64),
 
-    driver_id VARCHAR(50) NOT NULL,
+    driver_id VARCHAR(50),
     passenger_id VARCHAR(50),
 
-    start_time TIMESTAMP NOT NULL,
-    end_time TIMESTAMP NOT NULL,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
 
     start_latitude DOUBLE PRECISION,
     start_longitude DOUBLE PRECISION,
@@ -140,16 +140,10 @@ CREATE TABLE daily_driver_score_data (
 
 
 
+
+
 -- Sample accelerometer data for driver "driver_123"
 
-INSERT INTO acceloremeter_data_class
-(id, driver_id, timestamp, lat, lon, accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z)
-VALUES
-(gen_random_uuid(), 'driver_123', '2025-10-11 12:00:00', 12.9716, 77.5946, 0.01, 0.02, 0.98, 0.001, 0.002, 0.003),
-(gen_random_uuid(), 'driver_123', '2025-10-11 12:00:01', 12.9717, 77.5947, 0.03, 0.01, 0.97, 0.002, 0.001, 0.004),
-(gen_random_uuid(), 'driver_123', '2025-10-11 12:00:02', 12.9718, 77.5948, 0.02, 0.03, 0.99, 0.003, 0.002, 0.001),
-(gen_random_uuid(), 'driver_123', '2025-10-11 12:00:03', 12.9719, 77.5949, 0.01, 0.04, 0.96, 0.004, 0.003, 0.002),
-(gen_random_uuid(), 'driver_123', '2025-10-11 12:00:04', 12.9720, 77.5950, 0.05, 0.02, 0.95, 0.005, 0.004, 0.003);
 
 
 -- ===========================
@@ -184,25 +178,7 @@ INSERT INTO fare_rates (rate, updated_by, active) VALUES
 -- ===========================
 -- INSERT RIDE FARE DATA (3)
 -- ===========================
-INSERT INTO ride_fare_data
-(id, ride_id, driver_id, passenger_id, start_time, end_time,
- start_latitude, start_longitude, end_latitude, end_longitude,
- distance_km, fare_amount, fare_rate)
-VALUES
-('RIDE-DATA-1', 'RIDE-1', 'DRIVER-1', 'PASS-1',
- '2025-10-11 10:00:00', '2025-10-11 10:25:00',
- 12.9716, 77.5946, 12.9816, 77.6046,
- 5.0, 60.0, 12.0),
 
-('RIDE-DATA-2', 'RIDE-2', 'DRIVER-2', 'PASS-2',
- '2025-10-11 11:00:00', '2025-10-11 11:40:00',
- 19.0760, 72.8777, 19.0860, 72.8877,
- 7.0, 94.5, 13.5),
-
-('RIDE-DATA-3', 'RIDE-3', 'DRIVER-3', 'PASS-3',
- '2025-10-11 12:00:00', '2025-10-11 12:20:00',
- 13.0827, 80.2707, 13.0927, 80.2807,
- 4.0, 44.0, 11.0);
 
 -- ===========================
 -- INSERT SOS ALERTS (3)
@@ -239,5 +215,7 @@ INSERT INTO daily_driver_score_data (driver_id, date, daily_driver_score) VALUES
 ('DRIVER-1', '2025-10-10', 85.5),
 ('DRIVER-2', '2025-10-10', 78.0),
 ('DRIVER-3', '2025-10-10', 90.2);
+
+
 
 
