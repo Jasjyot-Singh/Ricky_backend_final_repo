@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "autometer_fare_data")
+@Table(name = "ride_fare_data")
 public class FarePerRideData {
 
     // 🔑 Internal DB identity (ONLY unique thing)
@@ -14,13 +14,14 @@ public class FarePerRideData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     // 🧾 Ride ID from Pi — NOT UNIQUE, NOT REQUIRED
     @JsonProperty("ride_id")
     @Column(name = "ride_id", length = 64)
     private String rideId;
 
     @JsonProperty("driver_id")
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String driverId;
 
     @JsonProperty("passenger_id")
@@ -28,11 +29,9 @@ public class FarePerRideData {
     private String passengerId;
 
     @JsonProperty("start_time")
-    @Column(nullable = false)
     private LocalDateTime startTime;
 
     @JsonProperty("end_time")
-    @Column(nullable = false)
     private LocalDateTime endTime;
 
     @JsonProperty("start_latitude")
