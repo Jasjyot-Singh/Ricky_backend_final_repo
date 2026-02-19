@@ -48,23 +48,26 @@ public class GlobalExceptionHandler {
     
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    
 
-    @ExceptionHandler(Exception.class)
+
+    @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneralException(
             Exception ex, WebRequest request) {
-        
+
+        // 🔥 Do NOT handle WebSocket upgrade exceptions
+        if (request.getDescription(false).contains("/ws-device")) {
+            throw new RuntimeException(ex);
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         response.put("error", "Internal Server Error");
         response.put("message", ex.getMessage());
         response.put("path", request.getDescription(false).replace("uri=", ""));
-        
-        // Log the full stack trace for debugging
-        System.err.println("Internal Server Error: " + ex.getMessage());
+
         ex.printStackTrace();
-        
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

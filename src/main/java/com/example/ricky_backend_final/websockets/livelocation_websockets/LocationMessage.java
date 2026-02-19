@@ -4,6 +4,7 @@ public class LocationMessage {
     private String driverId;
     private double latitude;
     private double longitude;
+    private Long timestamp;
 
     public LocationMessage() {}
     public LocationMessage(String driverId, double latitude, double longitude) {
@@ -18,5 +19,8 @@ public class LocationMessage {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+    public Long getTimestamp() { return timestamp; }
+    public void setTimestamp(Long timestamp) { this.timestamp = timestamp; }
+
 }
 

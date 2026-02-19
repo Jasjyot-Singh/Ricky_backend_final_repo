@@ -1,5 +1,8 @@
-package com.example.ricky_backend_final.controller;
+package com.example.ricky_backend_final.websockets;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +16,7 @@ import java.util.UUID;
 public class SosController {
 
     private static final String SOS_TOPIC = "/topic/sos-alerts";
+    private static final Logger log = LoggerFactory.getLogger(SosController.class);
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -21,46 +25,68 @@ public class SosController {
     }
 
     /**
-     * This endpoint is called by your PyQt app:
-     * requests.post(base_url, json=payload)
+     * Called by Raspberry Pi (Python)
      */
     @PostMapping
-    public ResponseEntity<?> receiveSos(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<?> receiveSos(@RequestBody SosRequest request) {
 
-        // 🔒 Defensive parsing (matches your Python client)
-        String type = payload.getOrDefault("type", "SOS_BUTTON").toString();
+        log.info("🚨 /api/sos endpoint HIT at {}", LocalDateTime.now());
+        log.info("📥 Incoming SOS Payload: {}", request);
 
-        double latitude = payload.get("latitude") != null
-                ? Double.parseDouble(payload.get("latitude").toString())
-                : 0.0;
+        try {
 
-        double longitude = payload.get("longitude") != null
-                ? Double.parseDouble(payload.get("longitude").toString())
-                : 0.0;
+            // Safe defaults
+            String type = request.type() != null ? request.type() : "SOS_BUTTON";
+            double latitude = request.latitude() != null ? request.latitude() : 0.0;
+            double longitude = request.longitude() != null ? request.longitude() : 0.0;
 
-        // ✅ Create SOS message (NO DB)
-        SosWebSocketMessage sosMessage = new SosWebSocketMessage(
-                "SOS-" + UUID.randomUUID(),
-                type,
-                latitude,
-                longitude,
-                "ACTIVE",
-                LocalDateTime.now()
-        );
+            log.info("🔍 Processed values → type: {}, lat: {}, lon: {}", type, latitude, longitude);
 
-        // 🚀 PUSH TO WEBSOCKET (ADMIN PANEL)
-        messagingTemplate.convertAndSend(SOS_TOPIC, sosMessage);
+            // Create WebSocket payload
+            SosWebSocketMessage message = new SosWebSocketMessage(
+                    "SOS-" + UUID.randomUUID(),
+                    type,
+                    latitude,
+                    longitude,
+                    "ACTIVE",
+                    LocalDateTime.now()
+            );
 
-        // ✅ Respond back to PyQt
-        return ResponseEntity.ok(Map.of(
-                "status", "RECEIVED",
-                "id", sosMessage.id()
-        ));
+            log.info("📡 Broadcasting SOS to topic {}", SOS_TOPIC);
+
+            messagingTemplate.convertAndSend(SOS_TOPIC, message);
+
+            log.info("✅ WebSocket broadcast successful. ID: {}", message.id());
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "RECEIVED",
+                    "id", message.id()
+            ));
+
+        } catch (Exception e) {
+
+            log.error("❌ ERROR while processing SOS request", e);
+
+            return ResponseEntity.internalServerError().body(
+                    Map.of(
+                            "status", "ERROR",
+                            "message", e.getMessage()
+                    )
+            );
+        }
     }
 
     /**
-     * Immutable WebSocket payload
-     * (Java 17+ record, fast & clean)
+     * Incoming request DTO
+     */
+    public record SosRequest(
+            String type,
+            Double latitude,
+            Double longitude
+    ) {}
+
+    /**
+     * Outgoing WebSocket payload
      */
     public record SosWebSocketMessage(
             String id,
@@ -68,7 +94,8 @@ public class SosController {
             double latitude,
             double longitude,
             String status,
+
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             LocalDateTime timestamp
     ) {}
 }
-
